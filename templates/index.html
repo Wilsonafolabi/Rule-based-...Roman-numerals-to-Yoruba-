@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Yoruba Numerals Expert</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #d3d3d3; /* Light gray background */
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: white;
+      padding: 2rem 3rem;
+      border-radius: 1rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      max-width: 450px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 1rem;
+      color: #2d3436;
+    }
+
+    input[type="text"] {
+      padding: 0.75rem 1rem;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
+    }
+
+    button {
+      background-color: #0984e3;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #74b9ff;
+    }
+
+    .result-box {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background-color: #f1f2f6;
+      border-left: 5px solid #0984e3;
+      border-radius: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .error-box {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background-color: #ffe6e6;
+      border-left: 5px solid #d63031;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      color: #d63031;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🔢 Roman ↔ Yoruba Numerals Expert System</h2>
+    <form action="/convert-form" method="POST">
+      <input type="text" name="input" placeholder="Enter Roman Numeral (e.g.i,iii,vi,ix,c,cc,XIV)" required value="{{ input_text | default('') }}" />
+      <button type="submit">Convert</button>
+    </form>
+
+    {% if error %}
+    <div class="error-box">
+      ⚠️ {{ error }}
+    </div>
+    {% endif %}
+
+    {% if result %}
+    <div class="result-box">
+      <strong>{{ input_text }}</strong> → {{ result }}
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>
