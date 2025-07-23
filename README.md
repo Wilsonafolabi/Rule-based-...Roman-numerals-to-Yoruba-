@@ -1,157 +1,87 @@
-Yoruba Roman Numerals Expert System 🇳🇬🔢
-This project is an expert system that translates Roman numerals (e.g., I, V, X, XIV, V̅M, up to 6000) into their Yoruba text equivalents using a fine-tuned transformer model. The model is based on google/byt5-small and fine-tuned with a dataset of Roman numerals and their Yoruba translations. The project includes a Flask-based web application for easy interaction via a web interface or API, and is integrated with Resend for sending email notifications of conversion results.
-Features
+# Yoruba Roman Numerals Translation System
 
-Translates Roman numerals (including extended notation like V̅ for thousands) into Yoruba text.
-Supports Roman numerals up to 6000.
-Provides a web interface for user input and a JSON API for programmatic access.
-Validates input to ensure only valid Roman numerals are processed.
-Sends conversion results via email using the Resend API.
-Deployed on Hugging Face Spaces for easy access and testing.
+This project is a fine-tuned sequence-to-sequence model that translates **Roman numerals** into their **Yoruba language representations**, trained on over 6000 samples. It includes both the model training code and a deployed web demo using Flask and Hugging Face.
 
-Model Details
+---
 
-Model: Fine-tuned from google/byt5-small.
-Dataset: Custom dataset (Yorubanumbers1-6000.csv) containing Roman numerals and their Yoruba translations.
-Training: Fine-tuned using PyTorch with the Davlan/byt5-base-eng-yor-mt tokenizer, optimized with AdamW, gradient clipping, and early stopping.
-Evaluation Metrics:
-BLEU Score: Measures translation quality.
-ROUGE Score: Evaluates text similarity.
-Exact Match Accuracy: Ensures precise translations.
+## 🔍 Project Overview
 
+- **Model**: [Davlan/byt5-base-eng-yor-mt](https://huggingface.co/Davlan/byt5-base-eng-yor-mt) fine-tuned on Roman-to-Yoruba numeral pairs.
+- **Dataset**: 6,000+ entries mapping Roman numerals to Yoruba equivalents.
+- **Goal**: Build an expert system that automatically translates Roman numerals (including extended Unicode variants like `V̅`) into Yoruba language.
+- **Approach**: 
+  - Fine-tune a pretrained multilingual model (ByT5).
+  - Deploy the trained model via Flask as a local web app and Hugging Face Space.
 
-Model Size: 582M parameters.
-Hosted on: Hugging Face Model Hub
+---
 
-Demo
-Try the live demo on Hugging Face Spaces.
-Installation
+## 🚀 Online Demo
 
-Clone the repository:
-git clone https://github.com/your-username/yoruba-roman-numerals.git
-cd yoruba-roman-numerals
+- 🧠 Model: [Hugging Face Model Page](https://huggingface.co/Emeritus-21/yorubanumerals-expertsystem)
+- 🌍 Live Web App: [Hugging Face Spaces Demo](https://huggingface.co/spaces/Emeritus-21/Yoruba-roman-numerals)
 
+---
 
-Install dependencies:
-pip install -r requirements.txt
+## 🧠 Model Training
 
+- Framework: PyTorch + Hugging Face Transformers
+- Tokenizer: `AutoTokenizer` from `Davlan/byt5-base-eng-yor-mt`
+- Loss: Cross-entropy
+- Optimizer: AdamW
+- Evaluation: BLEU, ROUGE, and exact match accuracy
+- Features:
+  - Gradient clipping
+  - Early stopping
+  - Train-validation split
+  - Performance tracking with loss plots
 
-Download the fine-tuned model and tokenizer from Hugging Face or use the local yoruba_byt5_trained directory if already downloaded.
+### 📈 Sample Metrics:
+- **Validation Accuracy**: ~`XX%` *(Replace with actual value)*
+- **BLEU Score**: `X.XXX`
+- **ROUGE-L**: `X.XXXX`
 
-Ensure you have PyTorch and CUDA (optional, for GPU support) installed.
+---
 
-Set up the Resend API:
+## 🛠 Local Setup & Usage
 
-Obtain a Resend API key from Resend.
-Create a .env file in the project root and add your Resend API key:RESEND_API_KEY=your_resend_api_key
+### 🔧 Requirements
 
+- Python 3.8+
+- PyTorch
+- Transformers
+- Flask
+- Evaluate (for metrics)
 
+### 🔨 Run Locally
 
+1. Clone this repo:
+    ```bash
+    git clone https://github.com/YOUR_USERNAME/yoruba-roman-numerals.git
+    cd yoruba-roman-numerals
+    ```
 
+2. Install dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-Usage
-Running the Flask App
+3. Start the Flask app:
+    ```bash
+    python app.py
+    ```
 
-Start the Flask application:
-python app.py
+4. Visit `http://localhost:5000` in your browser.
 
+---
 
-Access the web interface at http://localhost:5000 or use the API endpoint at http://localhost:5000/convert.
+## 📡 API Usage
 
+**Endpoint:** `/convert`
 
-Example API Usage
-Send a POST request to the /convert endpoint:
-curl -X POST http://localhost:5000/convert -H "Content-Type: application/json" -d '{"input": "V̅M", "email": "user@example.com"}'
+**Method:** `POST`
 
-Response:
+**Request (JSON):**
+```json
 {
-  "input": "V̅M",
-  "yoruba": "ẹgbẹ̀rún márùn-ún",
-  "email_status": "Conversion result sent to user@example.com"
+  "input": "XIV"
 }
-
-Example Code Usage
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-import requests
-
-# Load model and tokenizer
-tokenizer = AutoTokenizer.from_pretrained("yoruba_byt5_trained")
-model = AutoModelForSeq2SeqLM.from_pretrained("yoruba_byt5_trained")
-
-# Example input
-roman_input = "V̅M"
-inputs = tokenizer(roman_input, return_tensors="pt", truncation=True, max_length=256)
-outputs = model.generate(**inputs, max_length=256)
-result = tokenizer.decode(outputs[0], skip_special_tokens=True)
-print(f"Input: {roman_input}, Yoruba: {result}")
-
-# Send result via Resend API
-resend_api_key = "your_resend_api_key"
-response = requests.post(
-    "https://api.resend.com/emails",
-    headers={"Authorization": f"Bearer {resend_api_key}"},
-    json={
-        "from": "your-app@resend.dev",
-        "to": "user@example.com",
-        "subject": "Yoruba Roman Numeral Conversion",
-        "text": f"Input: {roman_input}\nYoruba: {result}"
-    }
-)
-print("Email sent:", response.json())
-
-Project Structure
-yoruba-roman-numerals/
-│
-├── app.py                    # Flask application for web interface and API
-├── yoruba_byt5_trained/      # Directory containing the fine-tuned model and tokenizer
-├── Yorubanumbers1-6000.csv   # Dataset used for training
-├── requirements.txt          # Python dependencies
-├── templates/
-│   └── index.html            # HTML template for web interface
-├── .env                      # Environment file for Resend API key
-└── README.md                 # Project documentation
-
-Training Details
-
-Dataset: Yorubanumbers1-6000.csv contains Roman numerals and their Yoruba translations.
-Tokenizer: Davlan/byt5-base-eng-yor-mt for tokenizing inputs and targets.
-Training Setup:
-Batch size: 8
-Learning rate: 5e-5
-Epochs: Up to 25 with early stopping (patience=3)
-Optimizer: AdamW with weight decay (0.01)
-Gradient clipping: max_norm=1.0
-
-
-Evaluation:
-Training and validation loss plotted for monitoring.
-Metrics: BLEU, ROUGE, and exact match accuracy calculated on validation set.
-
-
-
-Dependencies
-
-transformers
-torch
-flask
-pandas
-tqdm
-matplotlib
-evaluate
-rouge_score
-requests
-python-dotenv
-
-Install them using:
-pip install transformers torch flask pandas tqdm matplotlib evaluate rouge_score requests python-dotenv
-
-Contributing
-Contributions are welcome! Please open an issue or submit a pull request with improvements or bug fixes.
-License
-This project is licensed under the MIT License.
-Acknowledgments
-
-Built with Hugging Face Transformers.
-Fine-tuned using Google Colab.
-Email functionality powered by Resend.
-Thanks to the Yoruba language community for inspiration and support.
